@@ -12,11 +12,12 @@ public interface PostService {
 
     PostDto getPostById(long id);
 
-    List<PostDto> getPostByCategoryName(String categoryName);
+//    List<PostDto> getPostByCategoryName(String categoryName);
 
     PostDto updatePost(PostDto postDto, long id);
 
     void deletePostById(long id);
 
-    List<PostDto> getPostsByCategory(Long categoryId);
+//    List<PostDto> getPostsByCategory(Long categoryId);
+    PostResponse getPostsByCategory(Long categoryId, int pageNo, int pageSize, String sortBy, String sortDir);
 }

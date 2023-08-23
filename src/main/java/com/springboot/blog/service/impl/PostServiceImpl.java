@@ -83,12 +83,12 @@ public class PostServiceImpl implements PostService {
         return mapToDTO(post);
     }
 
-    @Override
-    public List<PostDto> getPostByCategoryName(String categoryName) {
-        List<Post> byCategory = postRepository.findByCategoryName(categoryName);
-        List<PostDto> collect = byCategory.stream().map(cat -> mapToDTO(cat)).collect(Collectors.toList());
-        return collect;
-    }
+//    @Override
+//    public List<PostDto> getPostByCategoryName(String categoryName) {
+//        List<Post> byCategory = postRepository.findByCategoryName(categoryName);
+//        List<PostDto> collect = byCategory.stream().map(cat -> mapToDTO(cat)).collect(Collectors.toList());
+//        return collect;
+//    }
 
     @Override
     public PostDto updatePost(PostDto postDto, long id) {
@@ -113,17 +113,48 @@ public class PostServiceImpl implements PostService {
         postRepository.delete(post);
     }
 
-    @Override
-    public List<PostDto> getPostsByCategory(Long categoryId) {
+//    @Override
+//    public List<PostDto> getPostsByCategory(Long categoryId) {
+//
+//        Category category = categoryRepository.findById(categoryId)
+//                .orElseThrow(() -> new ResourceNotFoundException("Category", "id", categoryId));
+//
+//        List<Post> posts = postRepository.findByCategoryId(categoryId);
+//
+//        return posts.stream().map((post) -> mapToDTO(post))
+//                .collect(Collectors.toList());
+//    }
 
+
+    @Override
+    public PostResponse getPostsByCategory(Long categoryId, int pageNo, int pageSize, String sortBy, String sortDir) {
+
+        Sort sort = sortDir.equalsIgnoreCase(Sort.Direction.ASC.name()) ? Sort.by(sortBy).ascending()
+                : Sort.by(sortBy).descending();
+
+        // Create Pageable instance
+        Pageable pageable = PageRequest.of(pageNo, pageSize, sort);
+
+        // Fetch posts by category
         Category category = categoryRepository.findById(categoryId)
                 .orElseThrow(() -> new ResourceNotFoundException("Category", "id", categoryId));
 
-        List<Post> posts = postRepository.findByCategoryId(categoryId);
+        Page<Post> posts = postRepository.findByCategoryId(categoryId, pageable);
 
-        return posts.stream().map((post) -> mapToDTO(post))
-                .collect(Collectors.toList());
+        // Get content for page object
+        List<PostDto> content = posts.getContent().stream().map(post -> mapToDTO(post)).collect(Collectors.toList());
+
+        PostResponse postResponse = new PostResponse();
+        postResponse.setContent(content);
+        postResponse.setPageNo(posts.getNumber());
+        postResponse.setPageSize(posts.getSize());
+        postResponse.setTotalElements(posts.getTotalElements());
+        postResponse.setTotalPages(posts.getTotalPages());
+        postResponse.setLast(posts.isLast());
+
+        return postResponse;
     }
+
 
     // convert Entity into DTO
     private PostDto mapToDTO(Post post){

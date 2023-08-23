@@ -22,13 +22,13 @@ public class PostController {
         this.postService = postService;
     }
 
-    @CrossOrigin(origins = "http://localhost:5173")
-    @GetMapping("/api/v1/posts/category")
-    public ResponseEntity<List<PostDto>> getPostByCategoryName(@RequestParam("category") String categoryName){
-        List<PostDto> postsByCategory = postService.getPostByCategoryName(categoryName);
-//        System.out.println(postsByCategory.get(0));
-        return ResponseEntity.ok(postsByCategory);
-    }
+//    @CrossOrigin(origins = "http://localhost:5173")
+//    @GetMapping("/api/v1/posts/category")
+//    public ResponseEntity<List<PostDto>> getPostByCategoryName(@RequestParam("category") String categoryName){
+//        List<PostDto> postsByCategory = postService.getPostByCategoryName(categoryName);
+////        System.out.println(postsByCategory.get(0));
+//        return ResponseEntity.ok(postsByCategory);
+//    }
 
     // create blog post rest api
 //    @PreAuthorize("hasRole('ADMIN')")
@@ -76,11 +76,20 @@ public class PostController {
 
     // Build Get Posts by Category REST API
     // http://localhost:8080/api/posts/category/3
-    @GetMapping("/api/v1/posts/category/{id}")
-    public ResponseEntity<List<PostDto>> getPostsByCategory(@PathVariable("id") Long categoryId){
-        List<PostDto> postDtos = postService.getPostsByCategory(categoryId);
-        return ResponseEntity.ok(postDtos);
-    }
 
+//    @GetMapping("/api/v1/posts/category/{id}")
+//    public ResponseEntity<List<PostDto>> getPostsByCategory(@PathVariable("id") Long categoryId){
+//        List<PostDto> postDtos = postService.getPostsByCategory(categoryId);
+//        return ResponseEntity.ok(postDtos);
+//    }
+
+    @GetMapping("/api/v1/posts/category/{id}")
+    public PostResponse getPostsByCategory(@PathVariable("id") Long categoryId,
+            @RequestParam(value = "pageNo", defaultValue = AppConstants.DEFAULT_PAGE_NUMBER, required = false) int pageNo,
+            @RequestParam(value = "pageSize", defaultValue = AppConstants.DEFAULT_PAGE_SIZE, required = false) int pageSize,
+            @RequestParam(value = "sortBy", defaultValue = AppConstants.DEFAULT_SORT_BY, required = false) String sortBy,
+            @RequestParam(value = "sortDir", defaultValue = AppConstants.DEFAULT_SORT_DIRECTION, required = false) String sortDir){
+        return postService.getPostsByCategory(categoryId,pageNo, pageSize, sortBy, sortDir);
+    }
 
 }

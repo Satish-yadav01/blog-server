@@ -33,14 +33,14 @@ public class PostDto {
     // post content should not be null or empty
     @NotEmpty
     private String content;
-    private Set<CommentDto> comments;
-
+//    private Set<CommentDto> comments;
+//
     private Long categoryId;
-    private String category;
-    private String avatarUrl;
-    @CreationTimestamp
-    private LocalDateTime CreatedAt;
 
-    @UpdateTimestamp
-    private LocalDateTime updatedAt;
+    private String avatarUrl;
+//    @CreationTimestamp
+//    private LocalDateTime CreatedAt;
+//
+//    @UpdateTimestamp
+//    private LocalDateTime updatedAt;
 }

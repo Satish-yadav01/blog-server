@@ -44,8 +44,8 @@ public class Post {
     @JoinColumn(name = "category_id")
     private Category category;
 
-    @Column(name = "category", nullable = false)
-    private String categoryName;
+//    @Column(name = "category", nullable = false)
+//    private String categoryName;
 
     private String avatarUrl;
 
