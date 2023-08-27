@@ -2,20 +2,21 @@ package com.springboot.blog.payload;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Lob;
-import jakarta.validation.constraints.NotNull;
-import lombok.Data;
-
 import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.time.LocalDateTime;
-import java.util.Set;
 
-@Data
-public class PostDto {
+@Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
+public class PostCreateResponse {
     private long id;
 
     // title should not be null  or empty
@@ -40,10 +41,5 @@ public class PostDto {
     @NotNull
     private Long categoryId;
 
-    private MultipartFile coverUrl;
-//    @CreationTimestamp
-//    private LocalDateTime CreatedAt;
-//
-//    @UpdateTimestamp
-//    private LocalDateTime updatedAt;
+    private String coverUrl;
 }

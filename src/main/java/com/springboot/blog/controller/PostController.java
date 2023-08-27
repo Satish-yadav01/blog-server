@@ -1,5 +1,6 @@
 package com.springboot.blog.controller;
 
+import com.springboot.blog.payload.PostCreateResponse;
 import com.springboot.blog.payload.PostDto;
 import com.springboot.blog.payload.PostResponse;
 import com.springboot.blog.service.PostService;
@@ -10,6 +11,9 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import jakarta.validation.Valid;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
 import java.util.List;
 
 @RestController
@@ -32,8 +36,24 @@ public class PostController {
 
     // create blog post rest api
 //    @PreAuthorize("hasRole('ADMIN')")
+//    @PostMapping("/api/v1/posts")
+//    public ResponseEntity<PostDto> createPost(@Valid @RequestBody PostDto postDto){
+//        return new ResponseEntity<>(postService.createPost(postDto), HttpStatus.CREATED);
+//    }
+
+    //create blog post
     @PostMapping("/api/v1/posts")
-    public ResponseEntity<PostDto> createPost(@Valid @RequestBody PostDto postDto){
+    public ResponseEntity<PostCreateResponse> createPost(
+            @Valid @RequestParam("title") String title,
+             @RequestParam("description") String description,
+             @RequestParam("categoryId") Long categoryId,
+             @RequestParam("coverUrl") MultipartFile coverUrl) throws IOException {
+        PostDto postDto = new PostDto();
+        postDto.setTitle(title);
+        postDto.setDescription(description);
+        postDto.setCategoryId(categoryId);
+        postDto.setCoverUrl(coverUrl);
+
         return new ResponseEntity<>(postService.createPost(postDto), HttpStatus.CREATED);
     }
 
@@ -50,7 +70,7 @@ public class PostController {
 
     // get post by id
     @GetMapping(value = "/api/v1/posts/{id}")
-    public ResponseEntity<PostDto> getPostById(@PathVariable(name = "id") long id){
+    public ResponseEntity<PostCreateResponse> getPostById(@PathVariable(name = "id") long id){
         return ResponseEntity.ok(postService.getPostById(id));
     }
 

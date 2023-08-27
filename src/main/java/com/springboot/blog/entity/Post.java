@@ -34,8 +34,8 @@ public class Post {
     @Column(name = "description", nullable = false,columnDefinition = "TEXT")
     private String description;
 
-    @Column(name = "content", nullable = false)
-    private String content;
+//    @Column(name = "content", nullable = false)
+//    private String content;
 
     @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<Comment> comments = new HashSet<>();
@@ -47,7 +47,7 @@ public class Post {
 //    @Column(name = "category", nullable = false)
 //    private String categoryName;
 
-    private String avatarUrl;
+    private String coverUrl;
 
     @CreationTimestamp
     private LocalDateTime CreatedAt;

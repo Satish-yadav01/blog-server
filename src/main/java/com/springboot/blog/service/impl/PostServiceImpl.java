@@ -3,23 +3,32 @@ package com.springboot.blog.service.impl;
 import com.springboot.blog.entity.Category;
 import com.springboot.blog.entity.Post;
 import com.springboot.blog.exception.ResourceNotFoundException;
+import com.springboot.blog.payload.PostCreateResponse;
 import com.springboot.blog.payload.PostDto;
 import com.springboot.blog.payload.PostResponse;
 import com.springboot.blog.repository.CategoryRepository;
 import com.springboot.blog.repository.PostRepository;
 import com.springboot.blog.service.PostService;
 import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
 public class PostServiceImpl implements PostService {
+
+    @Value("${image.post.upload.path}")
+    private String postImagePath;
 
     private PostRepository postRepository;
 
@@ -35,19 +44,42 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public PostDto createPost(PostDto postDto) {
+    public PostCreateResponse createPost(PostDto postDto) throws IOException {
 
         Category category = categoryRepository.findById(postDto.getCategoryId())
                 .orElseThrow(() -> new ResourceNotFoundException("Category", "id", postDto.getCategoryId()));
 
-        // convert DTO to entity
-        Post post = mapToEntity(postDto);
-        post.setCategory(category);
-        Post newPost = postRepository.save(post);
+        String imageName = System.currentTimeMillis() + "_" + postDto.getCoverUrl().getOriginalFilename();
+//        String absoluteImagePath = servletContext.getRealPath(profileImagePath) + imageName;
 
-        // convert entity to DTO
-        PostDto postResponse = mapToDTO(newPost);
-        return postResponse;
+        Path imagePath = Paths.get(postImagePath + imageName);
+
+        // Log the absolute path
+        System.out.println("Absolute Path: " + imagePath.toAbsolutePath());
+
+        Files.copy(postDto.getCoverUrl().getInputStream(), imagePath);
+
+        // convert DTO to entity
+        Post post = new Post();
+        post.setTitle(postDto.getTitle());
+        post.setDescription(postDto.getDescription());
+        post.setCategory(category);
+        post.setCoverUrl(imageName);
+
+
+//        Post post = mapToEntity(postDto);
+//        post.setCategory(category);
+        Post newPost = postRepository.save(post);
+//
+        // convert entity to postCreateResponse
+        PostCreateResponse postCreateResponse = new PostCreateResponse();
+        postCreateResponse.setTitle(newPost.getTitle());
+        postCreateResponse.setDescription(newPost.getDescription());
+        postCreateResponse.setCategoryId(newPost.getCategory().getId());
+        postCreateResponse.setCoverUrl(post.getCoverUrl());
+
+
+        return postCreateResponse;
     }
 
     @Override
@@ -78,9 +110,15 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public PostDto getPostById(long id) {
+    public PostCreateResponse getPostById(long id) {
         Post post = postRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Post", "id", id));
-        return mapToDTO(post);
+
+        PostCreateResponse postCreateResponse = new PostCreateResponse();
+        postCreateResponse.setTitle(post.getTitle());
+        postCreateResponse.setDescription(post.getDescription());
+        postCreateResponse.setCategoryId(post.getCategory().getId());
+        postCreateResponse.setCoverUrl(post.getCoverUrl());
+        return postCreateResponse;
     }
 
 //    @Override
@@ -100,7 +138,7 @@ public class PostServiceImpl implements PostService {
 
         post.setTitle(postDto.getTitle());
         post.setDescription(postDto.getDescription());
-        post.setContent(postDto.getContent());
+//        post.setContent(postDto.getContent());
         post.setCategory(category);
         Post updatedPost = postRepository.save(post);
         return mapToDTO(updatedPost);

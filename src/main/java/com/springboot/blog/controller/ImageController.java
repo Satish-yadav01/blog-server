@@ -72,12 +72,33 @@ import java.nio.file.Paths;
 @RequestMapping("/api/v1")
 public class ImageController {
 
-    private final String imageUploadPath = "uploaded-images/"; // Update this with your actual path
+    @Value("${image.user.upload.path}")
+    private String imageUploadUserPath; //= "uploaded-images/"; // Update this with your actual path
 
-    @GetMapping("/images/{imageName:.+}")
-    public ResponseEntity<byte[]> getImage(@PathVariable String imageName) throws IOException {
+    @Value("${image.post.upload.path}")
+    private String imageUploadPostPath;
+
+    @GetMapping("/images/user/{imageName:.+}")
+    public ResponseEntity<byte[]> getUserImage(@PathVariable String imageName) throws IOException {
         // Construct the path to the uploaded image
-        Path imagePath = Paths.get(imageUploadPath, imageName);
+        Path imagePath = Paths.get(imageUploadUserPath, imageName);
+
+        if (Files.exists(imagePath)) {
+            byte[] imageBytes = Files.readAllBytes(imagePath);
+
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.IMAGE_JPEG); // Set the appropriate content type
+
+            return ResponseEntity.ok().headers(headers).body(imageBytes);
+        } else {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+    @GetMapping("/images/post/{imageName:.+}")
+    public ResponseEntity<byte[]> getPostImage(@PathVariable String imageName) throws IOException {
+        // Construct the path to the uploaded image
+        Path imagePath = Paths.get(imageUploadPostPath, imageName);
 
         if (Files.exists(imagePath)) {
             byte[] imageBytes = Files.readAllBytes(imagePath);

@@ -13,7 +13,6 @@ import com.springboot.blog.security.JwtTokenProvider;
 import com.springboot.blog.service.AuthService;
 //import jakarta.persistence.criteria.Path;
 import jakarta.servlet.ServletContext;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -34,7 +33,7 @@ import java.util.Set;
 @Service
 public class AuthServiceImpl implements AuthService {
 
-    @Value("${image.upload.path}")
+    @Value("${image.user.upload.path}")
     private String profileImagePath;
 
     private AuthenticationManager authenticationManager;
