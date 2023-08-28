@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.List;
 import java.util.Set;
 
 @Setter
@@ -34,4 +35,7 @@ public class User {
     )
     private Set<Role> roles;
     private String profileImagePath;
+
+    @OneToMany(mappedBy = "createdBy", cascade = CascadeType.ALL)
+    private List<Post> posts;
 }

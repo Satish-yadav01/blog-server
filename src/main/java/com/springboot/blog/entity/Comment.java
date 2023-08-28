@@ -22,7 +22,7 @@ public class Comment {
     private String email;
     private String body;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "post_id", nullable = false)
     private Post post;
 }

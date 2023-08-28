@@ -1,5 +1,6 @@
 package com.springboot.blog.payload;
 
+import com.springboot.blog.entity.User;
 import jakarta.persistence.Column;
 import jakarta.persistence.Lob;
 import jakarta.validation.constraints.NotEmpty;
@@ -42,4 +43,6 @@ public class PostCreateResponse {
     private Long categoryId;
 
     private String coverUrl;
+
+    private RegisterResponse createdBy;
 }

@@ -1,5 +1,6 @@
 package com.springboot.blog.entity;
 
+import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
 import jakarta.persistence.*;
@@ -54,4 +55,9 @@ public class Post {
 
     @UpdateTimestamp
     private LocalDateTime updatedAt;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "createdBy")
+    @NotNull
+    private User createdBy;
 }

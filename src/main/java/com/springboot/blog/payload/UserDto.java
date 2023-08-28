@@ -13,12 +13,11 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class UserDto {
+    private List<PostDto> posts;
     private String name;
     @Column(nullable = false, unique = true)
     private String username;
     @Column(nullable = false, unique = true)
     private String email;
-
-    private List<PostDto> posts;
     private String profileImagePath;
 }

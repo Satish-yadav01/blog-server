@@ -35,12 +35,15 @@ public class PostDto {
     // post content should not be null or empty
 //    @NotEmpty
 //    private String content;
-//    private Set<CommentDto> comments;
+    private Set<CommentDto> comments;
 
     @NotNull
     private Long categoryId;
 
     private MultipartFile coverUrl;
+
+    @NotNull
+    private Long loggedInUserId;
 //    @CreationTimestamp
 //    private LocalDateTime CreatedAt;
 //

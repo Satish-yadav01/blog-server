@@ -2,12 +2,15 @@ package com.springboot.blog.service.impl;
 
 import com.springboot.blog.entity.Category;
 import com.springboot.blog.entity.Post;
+import com.springboot.blog.entity.User;
 import com.springboot.blog.exception.ResourceNotFoundException;
 import com.springboot.blog.payload.PostCreateResponse;
 import com.springboot.blog.payload.PostDto;
 import com.springboot.blog.payload.PostResponse;
+import com.springboot.blog.payload.RegisterResponse;
 import com.springboot.blog.repository.CategoryRepository;
 import com.springboot.blog.repository.PostRepository;
+import com.springboot.blog.repository.UserRepository;
 import com.springboot.blog.service.PostService;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Value;
@@ -22,6 +25,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -32,19 +36,26 @@ public class PostServiceImpl implements PostService {
 
     private PostRepository postRepository;
 
+    private final UserRepository userRepository;
+
     private ModelMapper mapper;
 
     private CategoryRepository categoryRepository;
 
-    public PostServiceImpl(PostRepository postRepository, ModelMapper mapper,
+    public PostServiceImpl(PostRepository postRepository, UserRepository userRepository, ModelMapper mapper,
                            CategoryRepository categoryRepository) {
           this.postRepository = postRepository;
-          this.mapper = mapper;
+        this.userRepository = userRepository;
+        this.mapper = mapper;
           this.categoryRepository = categoryRepository;
     }
 
     @Override
     public PostCreateResponse createPost(PostDto postDto) throws IOException {
+//        System.out.println(postDto.getTitle());
+//        System.out.println(postDto.getDescription());
+//        System.out.println("loggedInUSer " + postDto.getLoggedInUserId());
+//        System.out.println("getCategoryId " + postDto.getCategoryId());
 
         Category category = categoryRepository.findById(postDto.getCategoryId())
                 .orElseThrow(() -> new ResourceNotFoundException("Category", "id", postDto.getCategoryId()));
@@ -59,17 +70,33 @@ public class PostServiceImpl implements PostService {
 
         Files.copy(postDto.getCoverUrl().getInputStream(), imagePath);
 
-        // convert DTO to entity
+        //find loggedInUser
+        System.out.println("loggedInUSer " + postDto.getLoggedInUserId());
+
+        User loggedInUSer = userRepository.findById(postDto.getLoggedInUserId())
+                .orElseThrow(() -> new ResourceNotFoundException("User", "id", postDto.getLoggedInUserId()));
+//        System.out.println(postDto.getLoggedInUserId());
+//        User loggedInUSer = user.orElse(new User());
+
+        /* convert DTO to entity */
         Post post = new Post();
         post.setTitle(postDto.getTitle());
         post.setDescription(postDto.getDescription());
         post.setCategory(category);
         post.setCoverUrl(imageName);
+        post.setCreatedBy(loggedInUSer);
 
 
 //        Post post = mapToEntity(postDto);
 //        post.setCategory(category);
         Post newPost = postRepository.save(post);
+
+        //RegisterResponse entity
+        RegisterResponse registerResponse = new RegisterResponse();
+        registerResponse.setName(loggedInUSer.getName());
+        registerResponse.setEmail(loggedInUSer.getEmail());
+        registerResponse.setUsername(loggedInUSer.getUsername());
+        registerResponse.setProfileImagePath(loggedInUSer.getProfileImagePath());
 //
         // convert entity to postCreateResponse
         PostCreateResponse postCreateResponse = new PostCreateResponse();
@@ -77,7 +104,7 @@ public class PostServiceImpl implements PostService {
         postCreateResponse.setDescription(newPost.getDescription());
         postCreateResponse.setCategoryId(newPost.getCategory().getId());
         postCreateResponse.setCoverUrl(post.getCoverUrl());
-
+        postCreateResponse.setCreatedBy(registerResponse);
 
         return postCreateResponse;
     }

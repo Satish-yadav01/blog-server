@@ -47,12 +47,14 @@ public class PostController {
             @Valid @RequestParam("title") String title,
              @RequestParam("description") String description,
              @RequestParam("categoryId") Long categoryId,
-             @RequestParam("coverUrl") MultipartFile coverUrl) throws IOException {
+             @RequestParam("coverUrl") MultipartFile coverUrl,
+            @RequestParam("loggedInUserId") Long loggedInUserId) throws IOException {
         PostDto postDto = new PostDto();
         postDto.setTitle(title);
         postDto.setDescription(description);
         postDto.setCategoryId(categoryId);
         postDto.setCoverUrl(coverUrl);
+        postDto.setLoggedInUserId(loggedInUserId);
 
         return new ResponseEntity<>(postService.createPost(postDto), HttpStatus.CREATED);
     }
